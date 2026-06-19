@@ -63,3 +63,8 @@
 MVP 验收清单见 `docs/departments/04_MVP验收清单.md`。
 
 稳定架构与首次联调步骤见 `docs/architecture/稳定架构与联调流程.md`。
+
+新窗口开始工作前必须阅读：
+
+- `docs/handoff/CURRENT_HANDOFF.md`
+- `docs/operations/AI部门运行与上下文隔离规则.md`

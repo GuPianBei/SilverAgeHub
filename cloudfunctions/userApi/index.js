@@ -100,7 +100,7 @@ function listOrders(openid) {
     });
 }
 
-exports.main = function (event) {
+exports.main = async function (event) {
   event = event || {};
 
   if (event.action === 'health') {
