@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="section">
+    <view class="title">提交预约</view>
+    <view class="subtitle">请填写联系信息，工作人员会处理报名。</view>
+  </view>
+
+  <view class="card form">
+    <input class="input" placeholder="姓名" value="{{userName}}" bindinput="onUserNameInput" />
+    <input class="input" placeholder="电话" type="number" value="{{phone}}" bindinput="onPhoneInput" />
+    <button class="button submit" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">提交报名</button>
+  </view>
+</view>

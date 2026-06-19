@@ -1,0 +1,14 @@
+.content {
+  margin-top: 32rpx;
+  color: #1f2933;
+  font-size: 32rpx;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.guide-image,
+.guide-video {
+  width: 100%;
+  margin-top: 28rpx;
+  border-radius: 12rpx;
+}

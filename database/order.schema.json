@@ -1,0 +1,10 @@
+{
+  "collection": "order",
+  "fields": {
+    "userName": "string",
+    "phone": "string",
+    "courseId": "string",
+    "status": "未确认|已确认|完成",
+    "createTime": "date"
+  }
+}

@@ -1,0 +1,13 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card state">正在加载课程...</view>
+  <view wx:elif="{{error}}" class="card state error">{{error}}</view>
+
+  <view wx:else class="card">
+    <view class="title">{{course.title}}</view>
+    <view class="subtitle">{{course.time}}</view>
+    <view class="info">地点：{{course.location}}</view>
+    <view class="info">人数上限：{{limitCountText}}</view>
+    <view class="content">{{course.description}}</view>
+    <navigator class="button signup" url="/pages/orders/create/index?courseId={{course._id}}">我要报名</navigator>
+  </view>
+</view>

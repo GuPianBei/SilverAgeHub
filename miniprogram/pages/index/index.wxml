@@ -1,0 +1,17 @@
+<view class="page">
+  <view class="section hero">
+    <view class="title">银发纪</view>
+    <view class="subtitle">简单学习手机技能，轻松预约线下课程。</view>
+  </view>
+
+  <view class="section grid">
+    <navigator class="card action" url="/pages/guides/list/index" open-type="switchTab">
+      <view class="action-title">看教程</view>
+      <view class="action-desc">按步骤学习常用功能</view>
+    </navigator>
+    <navigator class="card action" url="/pages/courses/list/index" open-type="switchTab">
+      <view class="action-title">约课程</view>
+      <view class="action-desc">选择时间和地点报名</view>
+    </navigator>
+  </view>
+</view>

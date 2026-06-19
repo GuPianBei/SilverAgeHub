@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="section">
+    <view class="title">课程预约</view>
+    <view class="subtitle">选择合适的时间和地点报名。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card state">正在加载课程...</view>
+  <view wx:elif="{{error}}" class="card state error">{{error}}</view>
+
+  <block wx:else>
+    <block wx:for="{{courses}}" wx:key="_id">
+      <navigator class="card item" url="/pages/courses/detail/index?id={{item._id}}">
+        <view class="item-title">{{item.title}}</view>
+        <view class="item-desc">{{item.time}}</view>
+        <view class="item-desc">{{item.location}}</view>
+      </navigator>
+    </block>
+    <view wx:if="{{courses.length === 0}}" class="card state">暂无课程</view>
+  </block>
+</view>

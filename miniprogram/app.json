@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/guides/list/index",
+    "pages/guides/detail/index",
+    "pages/courses/list/index",
+    "pages/courses/detail/index",
+    "pages/orders/create/index",
+    "pages/mine/index/index"
+  ],
+  "subPackages": [
+    {
+      "root": "admin",
+      "name": "admin",
+      "pages": [
+        "pages/index/index"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarTitleText": "银发纪",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f7f2"
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#1f7a5a",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/guides/list/index",
+        "text": "教程"
+      },
+      {
+        "pagePath": "pages/courses/list/index",
+        "text": "课程"
+      },
+      {
+        "pagePath": "pages/mine/index/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

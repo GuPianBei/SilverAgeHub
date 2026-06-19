@@ -1,0 +1,19 @@
+<view class="page">
+  <view class="section">
+    <view class="title">教程学习</view>
+    <view class="subtitle">按步骤学习常用手机功能。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card state">正在加载教程...</view>
+  <view wx:elif="{{error}}" class="card state error">{{error}}</view>
+
+  <block wx:else>
+    <block wx:for="{{guides}}" wx:key="_id">
+      <navigator class="card item" url="/pages/guides/detail/index?id={{item._id}}">
+        <view class="item-title">{{item.title}}</view>
+        <view class="item-desc">{{item.category}}</view>
+      </navigator>
+    </block>
+    <view wx:if="{{guides.length === 0}}" class="card state">暂无教程</view>
+  </block>
+</view>

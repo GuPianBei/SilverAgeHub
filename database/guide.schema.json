@@ -1,0 +1,11 @@
+{
+  "collection": "guide",
+  "fields": {
+    "title": "string",
+    "category": "string",
+    "content": "string",
+    "images": "array",
+    "video": "string",
+    "createTime": "date"
+  }
+}

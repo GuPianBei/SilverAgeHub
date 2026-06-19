@@ -1,0 +1,17 @@
+.info {
+  margin-top: 20rpx;
+  color: #1f2933;
+  font-size: 32rpx;
+  line-height: 1.6;
+}
+
+.content {
+  margin-top: 32rpx;
+  color: #1f2933;
+  font-size: 32rpx;
+  line-height: 1.8;
+}
+
+.signup {
+  margin-top: 40rpx;
+}

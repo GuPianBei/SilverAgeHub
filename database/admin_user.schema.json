@@ -1,0 +1,10 @@
+{
+  "collection": "admin_user",
+  "fields": {
+    "openid": "string",
+    "enabled": "boolean",
+    "role": "admin|operator",
+    "name": "string",
+    "createTime": "date"
+  }
+}

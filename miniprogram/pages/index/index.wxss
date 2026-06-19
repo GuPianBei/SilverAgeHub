@@ -1,0 +1,25 @@
+.hero {
+  padding-top: 24rpx;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24rpx;
+}
+
+.action {
+  min-height: 180rpx;
+}
+
+.action-title {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.action-desc {
+  margin-top: 16rpx;
+  color: #5f6c72;
+  font-size: 30rpx;
+  line-height: 1.5;
+}
