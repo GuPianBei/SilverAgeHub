@@ -233,6 +233,6 @@ MVP 不验收：
 | 用户端页面骨架 | 已完成 | 首页、教程、课程、预约、我的已建立 |
 | 云函数骨架 | 已完成 | userApi、adminApi 已建立并统一响应协议 |
 | 数据库 schema | 已完成 | guide、course、order、admin_user 已定义 |
-| 管理端 CRUD | 已完成待联调 | 管理分包已具备教程/课程 CRUD 和预约状态更新 |
-| 云环境联调 | 待重新部署 | 需要部署 userApi、adminApi 并初始化 admin_user |
-| UI 细化 | 待完善 | 需继续优化适老化视觉与状态 |
+| 管理端 CRUD | 已完成 | 教程/课程 CRUD 和预约状态更新已真实验证 |
+| 云环境联调 | 已完成 | userApi、adminApi、admin_user 和预约闭环已验证 |
+| UI 细化 | 已完成 MVP 阶段 | 用户主链路已完成适老化视觉与信息层级优化 |

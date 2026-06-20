@@ -5,8 +5,14 @@
   </view>
 
   <view class="card form">
-    <input class="input" placeholder="姓名" value="{{userName}}" bindinput="onUserNameInput" />
-    <input class="input" placeholder="电话" type="number" value="{{phone}}" bindinput="onPhoneInput" />
+    <view class="field">
+      <view class="field-label">姓名</view>
+      <input class="input" placeholder="请输入预约人姓名" value="{{userName}}" bindinput="onUserNameInput" />
+    </view>
+    <view class="field">
+      <view class="field-label">联系电话</view>
+      <input class="input" placeholder="请输入手机号码" type="number" value="{{phone}}" bindinput="onPhoneInput" />
+    </view>
     <button class="button submit" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">提交报名</button>
   </view>
 </view>

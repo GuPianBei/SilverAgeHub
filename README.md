@@ -68,3 +68,9 @@ MVP 验收清单见 `docs/departments/04_MVP验收清单.md`。
 
 - `docs/handoff/CURRENT_HANDOFF.md`
 - `docs/operations/AI部门运行与上下文隔离规则.md`
+
+产品、研发、运营和上架的唯一规模化主路线图：
+
+- `docs/retrospective/MVP阶段复盘与规模化路线图.md`
+
+原测试版计划和企业化清单已并入主路线图，仅保留兼容入口。

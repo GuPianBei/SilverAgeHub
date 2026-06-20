@@ -12,12 +12,17 @@ const RESOURCES = [
   { key: 'order', label: '预约管理' }
 ];
 
+const MAX_GUIDE_IMAGES = 20;
+const MAX_IMAGES_PER_PICK = 9;
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
+
 const EMPTY_FORM = {
   guide: {
     title: '',
     category: '',
     content: '',
-    imagesText: '',
+    images: [],
     video: ''
   },
   course: {
@@ -29,14 +34,53 @@ const EMPTY_FORM = {
   }
 };
 
+function chooseMedia(options) {
+  return new Promise((resolve, reject) => {
+    wx.chooseMedia({
+      ...options,
+      success: resolve,
+      fail: reject
+    });
+  });
+}
+
+function getExtension(filePath, fallback) {
+  const match = String(filePath || '').match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+  return match ? match[1].toLowerCase() : fallback;
+}
+
+function createCloudPath(owner, kind, filePath, fallbackExtension) {
+  const ownerPath = String(owner || 'admin').replace(/[^a-zA-Z0-9_-]/g, '');
+  const extension = getExtension(filePath, fallbackExtension);
+  const random = Math.random().toString(36).slice(2, 10);
+  return `guides/${ownerPath}/${kind}/${Date.now()}-${random}.${extension}`;
+}
+
+function uploadMedia(owner, filePath, kind, fallbackExtension, onProgress) {
+  const task = wx.cloud.uploadFile({
+    cloudPath: createCloudPath(owner, kind, filePath, fallbackExtension),
+    filePath
+  });
+
+  if (task && typeof task.onProgressUpdate === 'function' && onProgress) {
+    task.onProgressUpdate(onProgress);
+  }
+
+  return task.then((result) => result.fileID);
+}
+
 Page({
   data: {
     resources: RESOURCES,
+    maxGuideImages: MAX_GUIDE_IMAGES,
     resourceIndex: 0,
     resource: 'guide',
     resourceLabel: '教程管理',
     loading: true,
     saving: false,
+    uploadingImages: false,
+    uploadingVideo: false,
+    uploadProgress: '',
     error: '',
     adminOpenid: '',
     isAdmin: false,
@@ -102,7 +146,9 @@ Page({
   },
 
   getEmptyForm(resource) {
-    return { ...(EMPTY_FORM[resource] || {}) };
+    const form = { ...(EMPTY_FORM[resource] || {}) };
+    if (resource === 'guide') form.images = [];
+    return form;
   },
 
   loadList() {
@@ -148,7 +194,7 @@ Page({
           title: item.title || '',
           category: item.category || '',
           content: item.content || '',
-          imagesText: (item.images || []).join('\n'),
+          images: Array.isArray(item.images) ? item.images : [],
           video: item.video || ''
         }
       });
@@ -176,7 +222,7 @@ Page({
         title: form.title,
         category: form.category,
         content: form.content,
-        images: (form.imagesText || '').split('\n').map((item) => item.trim()).filter(Boolean),
+        images: Array.isArray(form.images) ? form.images : [],
         video: form.video
       };
     }
@@ -195,8 +241,18 @@ Page({
   },
 
   saveForm() {
-    const { resource, editingId, saving } = this.data;
+    const {
+      resource,
+      editingId,
+      saving,
+      uploadingImages,
+      uploadingVideo
+    } = this.data;
     if (resource === 'order' || saving) return;
+    if (uploadingImages || uploadingVideo) {
+      wx.showToast({ title: '请等待文件上传完成', icon: 'none' });
+      return;
+    }
 
     const payload = this.buildPayload();
     const validationMessage = this.validatePayload(resource, payload);
@@ -225,6 +281,137 @@ Page({
       .finally(() => {
         this.setData({ saving: false });
       });
+  },
+
+  chooseGuideImages() {
+    const { uploadingImages, uploadingVideo, form, adminOpenid } = this.data;
+    if (uploadingImages || uploadingVideo) return;
+
+    const images = Array.isArray(form.images) ? form.images : [];
+    const remaining = MAX_GUIDE_IMAGES - images.length;
+    if (remaining <= 0) {
+      wx.showToast({ title: `最多上传 ${MAX_GUIDE_IMAGES} 张图片`, icon: 'none' });
+      return;
+    }
+
+    chooseMedia({
+      count: Math.min(remaining, MAX_IMAGES_PER_PICK),
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      sizeType: ['compressed']
+    })
+      .then((result) => {
+        const files = result.tempFiles || [];
+        const oversized = files.some((file) => Number(file.size) > MAX_IMAGE_SIZE);
+        if (oversized) {
+          throw new Error('单张图片不能超过 10MB');
+        }
+
+        this.setData({
+          uploadingImages: true,
+          uploadProgress: files.length ? `正在上传第 1/${files.length} 张图片` : ''
+        });
+
+        const uploaded = [];
+        let chain = Promise.resolve();
+        files.forEach((file, index) => {
+          chain = chain.then(() => {
+            this.setData({
+              uploadProgress: `正在上传第 ${index + 1}/${files.length} 张图片`
+            });
+            return uploadMedia(adminOpenid, file.tempFilePath, 'images', 'jpg', (progress) => {
+              this.setData({
+                uploadProgress: `第 ${index + 1}/${files.length} 张：${progress.progress}%`
+              });
+            }).then((fileID) => {
+              uploaded.push(fileID);
+              this.setData({
+                'form.images': images.concat(uploaded)
+              });
+            });
+          });
+        });
+
+        return chain.then(() => {
+          wx.showToast({ title: '图片上传完成' });
+        });
+      })
+      .catch((error) => {
+        const message = error && (error.errMsg || error.message) || '';
+        if (message.indexOf('cancel') === -1) {
+          wx.showToast({ title: message || '图片上传失败', icon: 'none' });
+        }
+      })
+      .finally(() => {
+        this.setData({
+          uploadingImages: false,
+          uploadProgress: ''
+        });
+      });
+  },
+
+  chooseGuideVideo() {
+    const { uploadingImages, uploadingVideo, adminOpenid } = this.data;
+    if (uploadingImages || uploadingVideo) return;
+
+    chooseMedia({
+      count: 1,
+      mediaType: ['video'],
+      sourceType: ['album', 'camera'],
+      maxDuration: 120
+    })
+      .then((result) => {
+        const file = (result.tempFiles || [])[0];
+        if (!file) return null;
+        if (Number(file.size) > MAX_VIDEO_SIZE) {
+          throw new Error('视频不能超过 50MB');
+        }
+
+        this.setData({
+          uploadingVideo: true,
+          uploadProgress: '正在上传视频'
+        });
+
+        return uploadMedia(adminOpenid, file.tempFilePath, 'videos', 'mp4', (progress) => {
+          this.setData({
+            uploadProgress: `视频上传中：${progress.progress}%`
+          });
+        }).then((fileID) => {
+          this.setData({ 'form.video': fileID });
+          wx.showToast({ title: '视频上传完成' });
+        });
+      })
+      .catch((error) => {
+        const message = error && (error.errMsg || error.message) || '';
+        if (message.indexOf('cancel') === -1) {
+          wx.showToast({ title: message || '视频上传失败', icon: 'none' });
+        }
+      })
+      .finally(() => {
+        this.setData({
+          uploadingVideo: false,
+          uploadProgress: ''
+        });
+      });
+  },
+
+  previewGuideImage(event) {
+    const current = event.currentTarget.dataset.src;
+    const images = this.data.form.images || [];
+    if (!current || !images.length) return;
+    wx.previewImage({ current, urls: images });
+  },
+
+  removeGuideImage(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    const images = (this.data.form.images || []).slice();
+    if (index < 0 || index >= images.length) return;
+    images.splice(index, 1);
+    this.setData({ 'form.images': images });
+  },
+
+  removeGuideVideo() {
+    this.setData({ 'form.video': '' });
   },
 
   validatePayload(resource, payload) {

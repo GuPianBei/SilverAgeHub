@@ -1,4 +1,5 @@
 const { listOrders } = require('../../../services/order');
+const { listCourses } = require('../../../services/course');
 const { enableAdminEntry } = require('../../../utils/config');
 
 const STATUS_TEXT = {
@@ -25,12 +26,26 @@ Page({
 
   loadOrders() {
     this.setData({ loading: true, error: '' });
-    return listOrders()
-      .then((res) => {
-        const orders = (res.data || []).map((item) => ({
+    return Promise.all([
+      listOrders(),
+      listCourses().catch(() => ({ data: [] }))
+    ])
+      .then(([orderResult, courseResult]) => {
+        const courseMap = {};
+        (courseResult.data || []).forEach((course) => {
+          courseMap[course._id] = course;
+        });
+
+        const orders = (orderResult.data || []).map((item) => {
+          const course = courseMap[item.courseId] || {};
+          return {
           ...item,
-          statusText: STATUS_TEXT[item.status] || '未确认'
-        }));
+            statusText: STATUS_TEXT[item.status] || '未确认',
+            courseTitle: course.title || '课程信息待确认',
+            courseTime: course.time || '请等待工作人员通知',
+            courseLocation: course.location || '请等待工作人员通知'
+          };
+        });
         this.setData({ orders });
       })
       .catch(() => {

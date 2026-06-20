@@ -10,10 +10,18 @@
   <block wx:else>
     <block wx:for="{{guides}}" wx:key="_id">
       <navigator class="card item" url="/pages/guides/detail/index?id={{item._id}}">
-        <view class="item-title">{{item.title}}</view>
-        <view class="item-desc">{{item.category}}</view>
+        <image wx:if="{{item.coverImage}}" class="cover-image" src="{{item.coverImage}}" mode="aspectFill" />
+        <view wx:else class="cover-placeholder">暂无封面</view>
+        <view class="item-content">
+          <view class="item-category">{{item.category}}</view>
+          <view class="item-title">{{item.title}}</view>
+          <view class="item-footer">
+            <view class="item-hint">打开查看步骤</view>
+            <view class="item-arrow">›</view>
+          </view>
+        </view>
       </navigator>
     </block>
-    <view wx:if="{{guides.length === 0}}" class="card state">暂无教程</view>
+    <view wx:if="{{guides.length === 0}}" class="card state">暂时没有教程，请稍后再来看看。</view>
   </block>
 </view>

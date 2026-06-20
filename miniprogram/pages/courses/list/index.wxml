@@ -11,10 +11,22 @@
     <block wx:for="{{courses}}" wx:key="_id">
       <navigator class="card item" url="/pages/courses/detail/index?id={{item._id}}">
         <view class="item-title">{{item.title}}</view>
-        <view class="item-desc">{{item.time}}</view>
-        <view class="item-desc">{{item.location}}</view>
+        <view class="item-meta">
+          <view class="meta-row">
+            <view class="meta-label">时间</view>
+            <view class="meta-value">{{item.time}}</view>
+          </view>
+          <view class="meta-row">
+            <view class="meta-label">地点</view>
+            <view class="meta-value">{{item.location}}</view>
+          </view>
+        </view>
+        <view class="item-footer">
+          <view class="item-hint">查看详情并报名</view>
+          <view class="item-arrow">›</view>
+        </view>
       </navigator>
     </block>
-    <view wx:if="{{courses.length === 0}}" class="card state">暂无课程</view>
+    <view wx:if="{{courses.length === 0}}" class="card state">暂时没有可预约课程，请稍后再来看看。</view>
   </block>
 </view>

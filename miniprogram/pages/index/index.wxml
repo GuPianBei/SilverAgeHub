@@ -1,17 +1,97 @@
-<view class="page">
-  <view class="section hero">
-    <view class="title">银发纪</view>
-    <view class="subtitle">简单学习手机技能，轻松预约线下课程。</view>
+<view class="page home-page">
+  <swiper class="news-swiper" circular="{{true}}" autoplay="{{false}}">
+    <swiper-item>
+      <view class="hero-banner">
+        <view class="hero-copy">
+          <view class="hero-kicker">银发纪</view>
+          <view class="hero-title">学手机，也能很轻松</view>
+          <view class="hero-desc">清楚的教程，贴心的线下课程</view>
+          <view class="hero-note">课程新闻轮播区</view>
+        </view>
+        <view class="hero-logo-wrap">
+          <image
+            class="hero-logo"
+            src="/assets/images/silver-years-logo-mark.png"
+            mode="aspectFill"
+          />
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <view class="quick-actions">
+    <navigator class="quick-item" url="/pages/guides/list/index" open-type="switchTab">
+      <view class="quick-icon icon-guide">学</view>
+      <view class="quick-label">看教程</view>
+    </navigator>
+    <navigator class="quick-item" url="/pages/courses/list/index" open-type="switchTab">
+      <view class="quick-icon icon-course">课</view>
+      <view class="quick-label">约课程</view>
+    </navigator>
+    <navigator class="quick-item" url="/pages/mine/index/index" open-type="switchTab">
+      <view class="quick-icon icon-order">约</view>
+      <view class="quick-label">我的预约</view>
+    </navigator>
   </view>
 
-  <view class="section grid">
-    <navigator class="card action" url="/pages/guides/list/index" open-type="switchTab">
-      <view class="action-title">看教程</view>
-      <view class="action-desc">按步骤学习常用功能</view>
-    </navigator>
-    <navigator class="card action" url="/pages/courses/list/index" open-type="switchTab">
-      <view class="action-title">约课程</view>
-      <view class="action-desc">选择时间和地点报名</view>
-    </navigator>
+  <view class="content-section">
+    <view class="section-heading">
+      <view>
+        <view class="section-title">教程推荐</view>
+        <view class="section-desc">为你挑选实用教程，点击直接学习</view>
+      </view>
+      <navigator class="section-more" url="/pages/guides/list/index" open-type="switchTab">全部教程</navigator>
+    </view>
+
+    <view wx:if="{{recommendationLoading}}" class="card state">正在准备推荐教程...</view>
+    <view wx:elif="{{recommendationError}}" class="card state error">{{recommendationError}}</view>
+
+    <block wx:else>
+      <view class="recommend-grid">
+        <navigator
+          wx:for="{{recommendedGuides}}"
+          wx:key="_id"
+          class="recommend-card {{index % 2 === 1 ? 'recommend-card-offset' : ''}}"
+          url="/pages/guides/detail/index?id={{item._id}}"
+        >
+          <view class="recommend-visual">
+            <view class="recommend-index">0{{index + 1}}</view>
+            <image
+              wx:if="{{item.coverImage}}"
+              class="recommend-cover"
+              src="{{item.coverImage}}"
+              mode="aspectFill"
+            />
+            <block wx:else>
+              <view class="visual-path">
+                <view class="visual-step step-one">1</view>
+                <view class="visual-step step-two">2</view>
+                <view class="visual-step step-three">3</view>
+                <view class="visual-line"></view>
+              </view>
+              <view class="lesson-sheet">
+                <view class="lesson-sheet-mark">学</view>
+                <view class="lesson-sheet-lines">
+                  <view></view>
+                  <view></view>
+                  <view></view>
+                </view>
+              </view>
+            </block>
+          </view>
+          <view class="recommend-content">
+            <view class="recommend-meta">
+              <view class="recommend-tag">{{item.category}}</view>
+            </view>
+            <view class="recommend-title">{{item.title}}</view>
+            <view class="recommend-action">
+              <text>直接学习</text>
+              <text class="feature-arrow">›</text>
+            </view>
+          </view>
+        </navigator>
+      </view>
+      <view wx:if="{{recommendedGuides.length === 0}}" class="card state">暂时没有可推荐的教程。</view>
+    </block>
   </view>
 </view>

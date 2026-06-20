@@ -11,7 +11,16 @@
   </view>
 
   <picker wx:if="{{isAdmin}}" mode="selector" range="{{resources}}" range-key="label" value="{{resourceIndex}}" bindchange="onResourceChange">
-    <view class="card selector">{{resourceLabel}}</view>
+    <view class="card selector">
+      <view class="selector-content">
+        <view class="selector-label">当前管理内容</view>
+        <view class="selector-value">{{resourceLabel}}</view>
+      </view>
+      <view class="selector-action">
+        <view class="selector-hint">点击切换</view>
+        <view class="selector-arrow">⌄</view>
+      </view>
+    </view>
   </picker>
 
   <view wx:if="{{isAdmin && resource !== 'order'}}" class="card form-card">
@@ -22,8 +31,43 @@
     <block wx:if="{{resource === 'guide'}}">
       <input class="input" placeholder="分类" value="{{form.category}}" data-field="category" bindinput="onInput" />
       <textarea class="textarea" placeholder="教程内容" value="{{form.content}}" data-field="content" bindinput="onInput" />
-      <textarea class="textarea" placeholder="图片地址，一行一个" value="{{form.imagesText}}" data-field="imagesText" bindinput="onInput" />
-      <input class="input" placeholder="视频地址" value="{{form.video}}" data-field="video" bindinput="onInput" />
+
+      <view class="media-section">
+        <view class="field-label">教程图片（最多 {{maxGuideImages}} 张，第一张作为封面）</view>
+        <view wx:if="{{form.images.length}}" class="media-grid">
+          <view wx:for="{{form.images}}" wx:key="*this" class="media-item">
+            <image class="media-image" src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="previewGuideImage" />
+            <button class="media-remove" data-index="{{index}}" bindtap="removeGuideImage">移除</button>
+          </view>
+        </view>
+        <button
+          class="upload-button"
+          loading="{{uploadingImages}}"
+          disabled="{{uploadingImages || uploadingVideo || form.images.length >= maxGuideImages}}"
+          bindtap="chooseGuideImages"
+        >
+          {{form.images.length ? '继续添加图片' : '选择并上传图片'}}
+        </button>
+      </view>
+
+      <view class="media-section">
+        <view class="field-label">教程视频（最多 1 个）</view>
+        <view wx:if="{{form.video}}" class="video-preview">
+          <video class="media-video" src="{{form.video}}" controls></video>
+          <button class="media-remove video-remove" bindtap="removeGuideVideo">移除视频</button>
+        </view>
+        <button
+          wx:else
+          class="upload-button"
+          loading="{{uploadingVideo}}"
+          disabled="{{uploadingImages || uploadingVideo}}"
+          bindtap="chooseGuideVideo"
+        >
+          选择并上传视频
+        </button>
+      </view>
+
+      <view wx:if="{{uploadProgress}}" class="upload-progress">{{uploadProgress}}</view>
     </block>
 
     <block wx:if="{{resource === 'course'}}">
@@ -34,8 +78,8 @@
     </block>
 
     <view class="form-actions">
-      <button class="button save" loading="{{saving}}" disabled="{{saving}}" bindtap="saveForm">保存</button>
-      <button class="button secondary" bindtap="startCreate">清空</button>
+      <button class="button save" loading="{{saving}}" disabled="{{saving || uploadingImages || uploadingVideo}}" bindtap="saveForm">保存</button>
+      <button class="button secondary" disabled="{{uploadingImages || uploadingVideo}}" bindtap="startCreate">清空</button>
     </view>
   </view>
 
@@ -48,7 +92,7 @@
         <view class="item-title">{{item.title}}</view>
         <view class="item-desc">{{item.category}}</view>
         <view class="row-actions">
-          <button class="small-button" data-item="{{item}}" bindtap="startEdit">编辑</button>
+          <button class="small-button edit-button" data-item="{{item}}" bindtap="startEdit">编辑</button>
           <button class="small-button danger" data-id="{{item._id}}" bindtap="deleteItem">删除</button>
         </view>
       </view>
@@ -60,7 +104,7 @@
         <view class="item-desc">{{item.time}}</view>
         <view class="item-desc">{{item.location}} · {{item.limitCount}} 人</view>
         <view class="row-actions">
-          <button class="small-button" data-item="{{item}}" bindtap="startEdit">编辑</button>
+          <button class="small-button edit-button" data-item="{{item}}" bindtap="startEdit">编辑</button>
           <button class="small-button danger" data-id="{{item._id}}" bindtap="deleteItem">删除</button>
         </view>
       </view>
@@ -70,7 +114,10 @@
       <view wx:for="{{list}}" wx:key="_id" class="card manage-item">
         <view class="item-title">{{item.userName}}</view>
         <view class="item-desc">电话：{{item.phone}}</view>
-        <view class="item-desc">课程编号：{{item.courseId}}</view>
+        <view class="admin-course-id">
+          <view class="admin-course-id-label">课程编号</view>
+          <view class="admin-course-id-value">{{item.courseId}}</view>
+        </view>
         <view class="item-desc">状态：{{item.status}}</view>
         <picker mode="selector" range="{{statusOptions}}" data-id="{{item._id}}" bindchange="onStatusChange">
           <view class="small-button status-button">更新状态</view>

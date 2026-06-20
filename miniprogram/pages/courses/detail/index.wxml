@@ -2,11 +2,24 @@
   <view wx:if="{{loading}}" class="card state">正在加载课程...</view>
   <view wx:elif="{{error}}" class="card state error">{{error}}</view>
 
-  <view wx:else class="card">
-    <view class="title">{{course.title}}</view>
-    <view class="subtitle">{{course.time}}</view>
-    <view class="info">地点：{{course.location}}</view>
-    <view class="info">人数上限：{{limitCountText}}</view>
+  <view wx:else class="card detail-card">
+    <view class="detail-kicker">线下课程</view>
+    <view class="title detail-title">{{course.title}}</view>
+    <view class="info-list">
+      <view class="info-row">
+        <view class="info-label">上课时间</view>
+        <view class="info-value">{{course.time}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">上课地点</view>
+        <view class="info-value">{{course.location}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">人数上限</view>
+        <view class="info-value">{{limitCountText}}</view>
+      </view>
+    </view>
+    <view class="content-label">课程介绍</view>
     <view class="content">{{course.description}}</view>
     <navigator class="button signup" url="/pages/orders/create/index?courseId={{course._id}}">我要报名</navigator>
   </view>

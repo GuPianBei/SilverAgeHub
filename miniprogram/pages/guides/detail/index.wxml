@@ -2,15 +2,25 @@
   <view wx:if="{{loading}}" class="card state">正在加载教程...</view>
   <view wx:elif="{{error}}" class="card state error">{{error}}</view>
 
-  <view wx:else class="card">
-    <view class="title">{{guide.title}}</view>
-    <view class="subtitle">{{guide.category}}</view>
+  <view wx:else class="card article">
+    <view class="article-category">{{guide.category}}</view>
+    <view class="title article-title">{{guide.title}}</view>
+    <view class="article-divider"></view>
+    <view class="content-label">教程步骤</view>
     <view class="content">{{guide.content}}</view>
 
-    <block wx:if="{{guide.images && guide.images.length}}">
-      <image wx:for="{{guide.images}}" wx:key="*this" class="guide-image" src="{{item}}" mode="widthFix" />
+    <block wx:if="{{guide.displayImages && guide.displayImages.length}}">
+      <image
+        wx:for="{{guide.displayImages}}"
+        wx:key="*this"
+        class="guide-image"
+        src="{{item}}"
+        mode="widthFix"
+        data-src="{{item}}"
+        bindtap="previewImage"
+      />
     </block>
 
-    <video wx:if="{{guide.video}}" class="guide-video" src="{{guide.video}}" controls></video>
+    <video wx:if="{{guide.displayVideo}}" class="guide-video" src="{{guide.displayVideo}}" controls></video>
   </view>
 </view>

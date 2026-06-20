@@ -1,25 +1,95 @@
 .item {
-  margin-bottom: 24rpx;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 28rpx;
+  padding: 30rpx;
+  border-top: 8rpx solid #79bfd8;
+}
+
+.item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
 }
 
 .item-title {
-  font-size: 34rpx;
+  flex: 1;
+  color: #183f4f;
+  font-size: 38rpx;
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
-.item-desc {
-  margin-top: 12rpx;
-  color: #5f6c72;
+.status-badge {
+  flex: none;
+  padding: 10rpx 18rpx;
+  border: 2rpx solid transparent;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.status-pending {
+  border-color: #dec37c;
+  background: #fff7da;
+  color: #6d5315;
+}
+
+.status-confirmed {
+  border-color: #79bfd8;
+  background: #dceef5;
+  color: #24566a;
+}
+
+.status-done {
+  border-color: #b9cbd2;
+  background: #eef3f5;
+  color: #46515a;
+}
+
+.item-info {
+  margin-top: 24rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 14rpx;
+  background: #eef6f8;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 16rpx 0;
+}
+
+.info-row + .info-row {
+  border-top: 2rpx solid #d5e4e9;
+}
+
+.info-label {
+  flex: none;
+  width: 144rpx;
+  color: #526c77;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.info-value {
+  flex: 1;
+  min-width: 0;
+  color: #183f4f;
   font-size: 32rpx;
-  line-height: 1.5;
+  line-height: 1.55;
+  word-break: break-all;
 }
 
 .admin-entry {
   margin-top: 48rpx;
-  padding: 24rpx;
+  padding: 28rpx 24rpx;
   color: #46515a;
-  font-size: 28rpx;
+  font-size: 30rpx;
+  line-height: 1.5;
   text-align: center;
   text-decoration: underline;
 }

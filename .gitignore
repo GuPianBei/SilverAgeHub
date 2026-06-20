@@ -12,6 +12,7 @@ deploy/
 # Logs and temporary files
 *.log
 *.tmp
+tmp/
 .DS_Store
 Thumbs.db
 
