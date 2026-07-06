@@ -25,6 +25,7 @@
 - `time`：上课时间
 - `location`：上课地点
 - `limitCount`：人数上限
+- `reservedCount`：已占用名额；旧课程在首次新报名事务中按历史有效预约自动初始化
 - `createTime`：创建时间
 
 ### order 预约表
@@ -33,6 +34,8 @@
 - `phone`：联系电话
 - `courseId`：关联课程 ID
 - `status`：预约状态，只能为 `未确认`、`已确认`、`完成`
+- `idempotencyKey`：由当前用户 OpenID 与课程 ID 生成的报名幂等键
+- `_openid`：预约用户 OpenID，由 `userApi` 根据可信调用上下文写入
 - `createTime`：预约创建时间
 
 ### admin_user 管理员表

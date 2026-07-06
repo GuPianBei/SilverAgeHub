@@ -6,6 +6,7 @@
     "time": "string",
     "location": "string",
     "limitCount": "number",
+    "reservedCount": "number",
     "createTime": "date"
   }
 }

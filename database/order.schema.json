@@ -5,6 +5,8 @@
     "phone": "string",
     "courseId": "string",
     "status": "未确认|已确认|完成",
+    "idempotencyKey": "string",
+    "_openid": "string",
     "createTime": "date"
   }
 }

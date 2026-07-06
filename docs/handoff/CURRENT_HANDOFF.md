@@ -1,6 +1,6 @@
 # 银发纪当前交接单
 
-更新时间：2026-06-20
+更新时间：2026-07-06
 
 ## 当前阶段
 
@@ -26,8 +26,19 @@
 正式云函数版本：
 
 ```text
-2026-06-18-stable-v1
+userApi：2026-07-06-booking-v0.2.2
+adminApi：2026-06-18-stable-v1
 ```
+
+## 2026-07-06 v0.2 报名生产化联调
+
+- `userApi` 新增报名事务：读取课程、检查同一用户重复报名、检查剩余名额、创建预约、更新已占名额在同一事务内完成。
+- 幂等口径为 `openid + courseId`，新预约使用确定性文档 ID，并保存 `idempotencyKey`。
+- `course` 新增 `reservedCount`；旧课程缺少该字段时，首次新报名会按历史有效预约自动初始化。
+- 同一账号重复提交返回原预约和 `duplicate: true`，不重复创建、不重复占名额。
+- 人数上限为 `1` 的课程已用两个真实微信账号验收：第一人成功，第二人返回 `409 / 课程名额已满`，没有超额创建。
+- 报名页已将 `409` 映射为“课程名额已满”，重新进入真机调试后显示成功。
+- 仅部署 `userApi`，云端状态为 `Active`；`adminApi` 和旧函数均未修改。
 
 ## 本轮完成
 
@@ -45,12 +56,20 @@
 - 用户预约创建后默认显示 `未确认`
 - 管理端更新预约为 `已确认` 后，用户端刷新同步显示 `已确认`
 - 最终 JS 语法、JSON 解析和 CloudBase 规则人工审查通过
+- 报名幂等、旧数据计数初始化、最后名额控制的本地自动化测试通过
+- 两个真实微信账号完成新报名与满员拦截联调
 
 ## 修改文件
 
 - `cloudfunctions/userApi/index.js`
+- `cloudfunctions/userApi/booking.js`
 - `cloudfunctions/userApi/package.json`
 - `cloudfunctions/adminApi/package.json`
+- `miniprogram/pages/orders/create/index.js`
+- `database/course.schema.json`
+- `database/order.schema.json`
+- `database/README.md`
+- `tests/userApi.booking.test.js`
 - `.agents/skills/cloudbase/`（项目级 CloudBase Skills）
 - `skills-lock.json`
 - `docs/handoff/CURRENT_HANDOFF.md`
@@ -58,7 +77,7 @@
 ## 验证结果
 
 ```text
-userApi 版本：2026-06-18-stable-v1
+userApi 版本：2026-07-06-booking-v0.2.2
 adminApi 版本：2026-06-18-stable-v1
 四个集合是否存在：是，guide/course/order/admin_user 均已真实读写
 whoami 是否 isAdmin=true：是，小程序真实 OpenID 授权后进入管理 CRUD 页面
@@ -70,6 +89,9 @@ whoami 是否 isAdmin=true：是，小程序真实 OpenID 授权后进入管理 
 2. adminApi 部署时短暂处于 Updating，FailedOperation.UpdateFunctionCode，Request ID ad74fdc5-7624-4bc7-86a2-96ecbeebd44f；等待 Active 后单次重试成功。
 3. userApi health 曾返回 null，Request ID 025b48ee-997f-4729-8ba1-44ef8a07a580；入口改为 async 后修复。
 4. userApi health 修复后成功，Request ID 394a643a-c8c2-4b69-a180-b899520b66f6。
+5. v0.2 首次新报名调用了事务文档引用不支持的 create()，Request ID 37f2d7c0-c1a7-4ba0-a119-e3788e56fab4；改为 set({ data }) 后修复。
+6. v0.2.1 课程计数 update() 缺少 data 包装，Request ID 1909eace-c674-4dfb-bb29-69aa909e33af；改为 update({ data }) 后修复。
+7. v0.2.2 新账号真实报名成功；满员课程拦截成功，Request ID 02450d6a-247f-423c-b0b7-10bccf796e59，返回 code=409、message=课程名额已满。
 ```
 
 ## 已知风险
@@ -78,6 +100,7 @@ whoami 是否 isAdmin=true：是，小程序真实 OpenID 授权后进入管理 
 - `wx-server-sdk@3.0.4` 的上游依赖审计存在历史安全告警；本轮为保持兼容未做破坏性升级。
 - 当前 `enableAdminEntry: true` 用于联调；正式发布前必须改为 `false`。
 - 云数据库中保留了联调课程、预约和管理员记录，发布演示前应确认是否保留。
+- `reservedCount` 目前由新报名事务维护；后续实现取消报名时必须在同一事务内释放名额。
 
 ## 未完成事项
 
@@ -85,10 +108,11 @@ whoami 是否 isAdmin=true：是，小程序真实 OpenID 授权后进入管理 
 - 按演示需要清理或保留联调测试数据。
 - 完成真机与隐私合规检查。
 - 尚未执行微信小程序正式上传或发布。
+- v0.2 后续仍需完成取消释放名额、课程/报名状态机、课程快照、分页筛选、CSV 导出、手机号脱敏和操作日志。
 
 ## 下一窗口第一步
 
-按 `docs/retrospective/MVP阶段复盘与规模化路线图.md` 完成「v0.2 报名生产化」P0 能力。
+继续按 `docs/retrospective/MVP阶段复盘与规模化路线图.md` 实现取消释放名额和课程/报名状态机；所有名额变更必须复用事务边界。
 
 ## 禁止变更
 

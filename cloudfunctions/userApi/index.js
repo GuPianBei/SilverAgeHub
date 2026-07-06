@@ -1,9 +1,10 @@
 var cloud = require('wx-server-sdk');
+var booking = require('./booking');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 var db = cloud.database();
-var API_VERSION = '2026-06-18-stable-v1';
+var API_VERSION = '2026-07-06-booking-v0.2.2';
 var allowResources = ['guide', 'course', 'order'];
 var allowActions = {
   guide: ['list', 'detail'],
@@ -67,26 +68,12 @@ function getCourse(id) {
 }
 
 function createOrder(data, openid) {
-  data = data || {};
-  var userName = String(data.userName || '').trim();
-  var phone = String(data.phone || '').trim();
-  var courseId = String(data.courseId || '').trim();
-
-  if (!userName || !phone || !courseId) {
-    return Promise.resolve(fail(400, '请完整填写姓名、电话和课程信息'));
-  }
-
-  return db.collection('order').add({
-    data: {
-      userName: userName,
-      phone: phone,
-      courseId: courseId,
-      status: '未确认',
-      createTime: db.serverDate(),
-      _openid: openid
-    }
-  }).then(function (result) {
-    return success({ id: result._id }, '预约成功');
+  return booking.createOrder({
+    db: db,
+    data: data,
+    openid: openid,
+    success: success,
+    fail: fail
   });
 }
 

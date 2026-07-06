@@ -45,8 +45,12 @@ Page({
           wx.switchTab({ url: '/pages/mine/index/index' });
         }, 800);
       })
-      .catch(() => {
-        wx.showToast({ title: '提交失败，请重试', icon: 'none' });
+      .catch((error) => {
+        const isCourseFull = Number(error && error.code) === 409;
+        wx.showToast({
+          title: isCourseFull ? '课程名额已满' : '提交失败，请重试',
+          icon: 'none'
+        });
       })
       .finally(() => {
         this.setData({ submitting: false });
